@@ -156,6 +156,20 @@ describe('strong', function(){
 
     expect(locale).toEqual(req.acceptedLanguages);
   });
+
+  it("should report an acceptable locale", function() {
+    strong.back.putAtPath('en.testing.second-level.everything', 'I am a translated string for locale: en');
+    strong.default_locale = 'en';
+    strong.locale = ['es', 'de', 'en'];
+    expect(strong.acceptable()).toEqual('en');
+  });
+
+  it("should return false for a list of unacceptable languages", function() {
+    strong.back.putAtPath('en.testing.everything', 'I am a translated string for locale: en');
+    strong.default_locale = 'de';
+    strong.locale = ['de', 'ru', 'zh'];
+    expect(strong.acceptable()).toEqual(false);
+  });
 });
 
 describe('strong.decorator', function () {

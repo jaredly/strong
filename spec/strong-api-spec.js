@@ -156,6 +156,29 @@ describe('strong', function(){
 
     expect(locale).toEqual(req.acceptedLanguages);
   });
+
+  it("should report an acceptable locale", function() {
+    strong.back.putAtPath('en.testing.second-level.everything', 'I am a translated string for locale: en');
+    strong.default_locale = 'en';
+    strong.locale = ['es', 'de', 'en'];
+    expect(strong.acceptable()).toEqual('en');
+  });
+
+  it("should report an acceptable locale if in the middle of the list or if it's a regional locale", function() {
+    strong.back.putAtPath('en.testing.second-level.everything', 'I am a translated string for locale: en');
+    strong.back.putAtPath('es.testing.second-level.everything', 'I am a translated string for locale: es');
+    strong.back.putAtPath('es-es.testing.second-level.everything', 'I am a translated string for locale: es-ES');
+    strong.default_locale = 'en';
+    strong.locale = [ 'zz', 'pt-PT', 'pt', 'es-ES', 'ES', 'en-gb', 'pt-br', 'en-US', 'en' ];
+    expect(strong.acceptable()).toEqual('es-es');
+  });
+
+  it("should return false for a list of unacceptable languages", function() {
+    strong.back.putAtPath('en.testing.everything', 'I am a translated string for locale: en');
+    strong.default_locale = 'de';
+    strong.locale = ['de', 'ru', 'zh'];
+    expect(strong.acceptable()).toEqual(false);
+  });
 });
 
 describe('strong.decorator', function () {
